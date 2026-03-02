@@ -1,0 +1,2 @@
+add_executable(UdpSocketExample UdpSocket.cpp)
+target_link_libraries(UdpSocketExample PRIVATE DNet)

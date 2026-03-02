@@ -1,0 +1,3 @@
+add_subdirectory(TcpServer)
+add_subdirectory(UdpSocket)
+add_subdirectory(TcpClient)

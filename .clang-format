@@ -1,0 +1,14 @@
+BasedOnStyle: Microsoft
+IndentWidth: 4
+TabWidth: 4
+UseTab: Always
+BreakBeforeBraces: Allman
+AllowShortIfStatementsOnASingleLine: AllIfsAndElse
+SpaceBeforeParens: Custom
+IndentAccessModifiers: false
+AccessModifierOffset: -4
+SortIncludes: false
+SpaceBeforeParensOptions:
+  AfterControlStatements: true
+  AfterFunctionDefinitionName: false
+  AfterOverloadedOperator: false
