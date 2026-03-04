@@ -16,6 +16,7 @@ public:
 
 private:
 	std::vector<Event *> events;
+	size_t initSize;
 };
 
 } // namespace DNet

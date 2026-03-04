@@ -3,7 +3,7 @@
 namespace DNet
 {
 
-EventPool::EventPool(size_t initialSize)
+EventPool::EventPool(size_t initialSize) : initSize(initialSize)
 {
 	events.reserve(initialSize);
 	for (size_t i = 0; i < initialSize; ++i)
@@ -35,7 +35,6 @@ Event *EventPool::allocateEvent(EventType type)
 		memset(&event->addr, 0, sizeof(SOCKADDR_STORAGE));
 #elif DNET_LINUX
 		event->error = 0;
-		event->handle = 0;
 		event->eventHandler = nullptr;
 		memset(&event->addr, 0, sizeof(sockaddr_storage));
 		memset(&event->msg, 0, sizeof(msghdr));
@@ -53,7 +52,14 @@ Event *EventPool::allocateEvent(EventType type)
 
 void EventPool::deallocateEvent(Event *event)
 {
-	events.push_back(event);
+	if (events.size() < initSize)
+	{
+		events.push_back(event);
+	}
+	else
+	{
+		delete event;
+	}
 }
 
 } // namespace DNet

@@ -36,7 +36,6 @@ struct Event DNET_EVENT_EX
 #elif DNET_LINUX
 	EventHandler *eventHandler;
 	int error;
-	int handle;
 	sockaddr_storage addr;
 	msghdr msg;
 	iovec iov;
@@ -49,7 +48,7 @@ struct Event DNET_EVENT_EX
 		memset(this, 0, sizeof(OVERLAPPED));
 	}
 #elif DNET_LINUX
-	Event(EventType t) : type(t), error(0), buffer(Buffer::STACK_SIZE), handle(0), addrLen(0), eventHandler(nullptr)
+	Event(EventType t) : type(t), error(0), buffer(Buffer::STACK_SIZE), addrLen(0), eventHandler(nullptr)
 	{
 	}
 #endif
