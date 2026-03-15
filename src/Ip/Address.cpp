@@ -38,7 +38,7 @@ AddressType Address::type() const
 	return addrType;
 }
 
-int Address::adressFamily() const
+int Address::addressFamily() const
 {
 	if (addrType == AddressType::IPv4) return AF_INET;
 	else if (addrType == AddressType::IPv6) return AF_INET6;

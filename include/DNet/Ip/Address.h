@@ -33,7 +33,7 @@ public:
 
 	bool isValid() const;
 	AddressType type() const;
-	int adressFamily() const;
+	int addressFamily() const;
 	std::string toString() const;
 	const Addr &get() const;
 
