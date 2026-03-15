@@ -43,6 +43,8 @@ public:
 	static Address LoopbackV4();
 	static Address LoopbackV6();
 
+	static int AddressFamily(AddressType type);
+
 private:
 	Addr addr;
 	AddressType addrType;

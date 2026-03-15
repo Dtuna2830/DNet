@@ -105,4 +105,17 @@ Address Address::LoopbackV6()
 	return a;
 }
 
+int Address::AddressFamily(AddressType type)
+{
+	switch (type)
+	{
+	case AddressType::IPv4:
+		return AF_INET;
+	case AddressType::IPv6:
+		return AF_INET6;
+	default:
+		return AF_UNSPEC;
+	}
+}
+
 } // namespace DNet
