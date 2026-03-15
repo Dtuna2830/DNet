@@ -1,6 +1,7 @@
 #include "DNet/Event/EventLoop.h"
 #include "../NetInit.h"
 #include "DNet/Event/EventHandler.h"
+#include <stdexcept>
 
 namespace DNet
 {
@@ -11,7 +12,7 @@ EventLoop::EventLoop(size_t poolSize) : pool(poolSize)
 	eventHandle = CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, 0, 0);
 	if (eventHandle == NULL)
 	{
-		std::terminate();
+		throw std::runtime_error("CreateIoCompletionPort failed");
 	}
 }
 

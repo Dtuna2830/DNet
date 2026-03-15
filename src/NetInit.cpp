@@ -1,5 +1,5 @@
 #include "NetInit.h"
-#include <exception>
+#include <stdexcept>
 
 namespace DNet
 {
@@ -18,7 +18,7 @@ void NetInit::Init()
 		int err = WSAStartup(wVersionRequested, &wsaData);
 		if (err != 0)
 		{
-			std::terminate();
+			throw std::runtime_error("WSAStartup failed");
 		}
 		LoadExtensions();
 	}
@@ -31,7 +31,7 @@ void NetInit::Clean()
 		int err = WSACleanup();
 		if (err != 0)
 		{
-			std::terminate();
+			throw std::runtime_error("WSACleanup failed");
 		}
 		AcceptEx = nullptr;
 		GetAcceptExSockaddrs = nullptr;
@@ -43,7 +43,7 @@ void NetInit::LoadExtensions()
 	SOCKET s = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if (s == INVALID_SOCKET)
 	{
-		std::terminate();
+		throw std::runtime_error("Socket failed while loading extensions");
 	}
 
 	GUID GuidAcceptEx = WSAID_ACCEPTEX;
@@ -53,7 +53,7 @@ void NetInit::LoadExtensions()
 	if (err == SOCKET_ERROR)
 	{
 		closesocket(s);
-		std::terminate();
+		throw std::runtime_error("AcceptEx failed");
 	}
 
 	GUID GuidGetAcceptExSockaddrs = WSAID_GETACCEPTEXSOCKADDRS;
@@ -62,7 +62,7 @@ void NetInit::LoadExtensions()
 	if (err == SOCKET_ERROR)
 	{
 		closesocket(s);
-		std::terminate();
+		throw std::runtime_error("GetAcceptExSockaddrs failed");
 	}
 
 	GUID GuidConnectEx = WSAID_CONNECTEX;
@@ -71,7 +71,7 @@ void NetInit::LoadExtensions()
 	if (err == SOCKET_ERROR)
 	{
 		closesocket(s);
-		std::terminate();
+		throw std::runtime_error("ConnectEx failed");
 	}
 
 	closesocket(s);

@@ -1,6 +1,6 @@
 #include "DNet/Event/EventLoop.h"
-#include <exception>
 #include "DNet/Event/EventHandler.h"
+#include <stdexcept>
 
 namespace DNet
 {
@@ -13,7 +13,7 @@ EventLoop::EventLoop(size_t poolSize) : pool(poolSize)
 	{
 		delete eventHandle;
 		eventHandle = nullptr;
-		std::terminate();
+		throw std::runtime_error("io_uring_queue_init failed");
 	}
 }
 
