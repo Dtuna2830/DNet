@@ -59,10 +59,15 @@ void EventLoop::stop()
 	PostQueuedCompletionStatus(eventHandle, 0, 0, NULL); // send empty message to unblock thread
 }
 
-void EventLoop::registerHandle(EventHandle handle, ULONG_PTR key)
+Error EventLoop::registerHandle(EventHandle handle, ULONG_PTR key)
 {
 	HANDLE result = CreateIoCompletionPort(handle, eventHandle, key, 0);
-	if (result == NULL) std::terminate();
+	if (result == NULL)
+	{
+		DWORD err = GetLastError();
+		return Error(err);
+	}
+	return Error();
 }
 
 } // namespace DNet

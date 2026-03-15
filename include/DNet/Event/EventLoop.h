@@ -1,6 +1,7 @@
 #pragma once
 #include "../DNetDefs.h"
 #include "EventPool.h"
+#include "../Error.h"
 
 namespace DNet
 {
@@ -15,7 +16,7 @@ public:
 	void stop();
 
 #if DNET_WINDOWS
-	void registerHandle(EventHandle handle, ULONG_PTR key);
+	Error registerHandle(EventHandle handle, ULONG_PTR key);
 #endif
 	EventHandle getEventHandle();
 	EventPool &getEventPool();
