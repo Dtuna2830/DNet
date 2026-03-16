@@ -17,7 +17,6 @@ set(DNET_SOURCES
     "include/DNet/Buffer.h"
     "src/Buffer.cpp"
     "include/DNet/Event/Event.h"
-    "include/DNet/Event/EventHandler.h"
     "include/DNet/Ip/Address.h"
     "src/Ip/Address.cpp"
     "include/DNet/Ip/Endpoint.h"
@@ -28,14 +27,11 @@ set(DNET_SOURCES
     "src/Event/EventPool.cpp"
     "include/DNet/Event/EventLoop.h"
     "src/Event/EventLoop.cpp"
-    "include/DNet/TcpConnection.h"
-    "src/TcpConnection.cpp"
-    "include/DNet/TcpServer.h"
-    "src/TcpServer.cpp"
-    "include/DNet/TcpClient.h"
-    "src/TcpClient.cpp"
-    "include/DNet/UdpSocket.h"
-    "src/UdpSocket.cpp"
+    "include/DNet/SocketOption.h"
+    "include/DNet/AsyncTcpSocket.h"
+    "src/AsyncTcpSocket.cpp"
+    "include/DNet/AsyncUdpSocket.h"
+    "src/AsyncUdpSocket.cpp"
 )
 
 if(DNET_PLATFORM_WINDOWS)
@@ -44,19 +40,15 @@ if(DNET_PLATFORM_WINDOWS)
         "src/NetInit.cpp"
         "src/ErrorWin.cpp"
         "src/Event/EventLoopWin.cpp"
-        "src/TcpConnectionWin.cpp"
-        "src/TcpServerWin.cpp"
-        "src/TcpClientWin.cpp"
-        "src/UdpSocketWin.cpp"
+        "src/AsyncTcpSocketWin.cpp"
+        "src/AsyncUdpSocketWin.cpp"
     )
 elseif(DNET_PLATFORM_LINUX)
     list(APPEND DNET_SOURCES
         "src/ErrorLinux.cpp"
         "src/Event/EventLoopLinux.cpp"
-        "src/TcpConnectionLinux.cpp"
-        "src/TcpServerLinux.cpp"
-        "src/TcpClientLinux.cpp"
-        "src/UdpSocketLinux.cpp"
+        "src/AsyncTcpSocketLinux.cpp"
+        "src/AsyncUdpSocketLinux.cpp"
     )
 endif()
 

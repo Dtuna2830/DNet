@@ -1,2 +1,0 @@
-add_executable(TcpClientExample TcpClient.cpp)
-target_link_libraries(TcpClientExample PRIVATE DNet)

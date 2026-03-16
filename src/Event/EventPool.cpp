@@ -31,21 +31,19 @@ Event *EventPool::allocateEvent(EventType type)
 #if DNET_WINDOWS
 		memset(event, 0, sizeof(OVERLAPPED));
 		event->error = ERROR_SUCCESS;
-		event->handle = NULL;
 		memset(&event->addr, 0, sizeof(SOCKADDR_STORAGE));
 #elif DNET_LINUX
 		event->error = 0;
-		event->eventHandler = nullptr;
 		memset(&event->addr, 0, sizeof(sockaddr_storage));
 		memset(&event->msg, 0, sizeof(msghdr));
 		memset(&event->iov, 0, sizeof(iovec));
 #endif
+		event->eventCallback = nullptr;
 		event->type = type;
 		event->buffer.resize(0);
 		event->addrLen = 0;
 		return event;
 	}
-
 	event = new Event(type);
 	return event;
 }

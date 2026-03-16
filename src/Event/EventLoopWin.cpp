@@ -1,6 +1,5 @@
 #include "DNet/Event/EventLoop.h"
 #include "../NetInit.h"
-#include "DNet/Event/EventHandler.h"
 #include <stdexcept>
 
 namespace DNet
@@ -33,22 +32,21 @@ void EventLoop::run()
 		LPOVERLAPPED overlapped = NULL;
 		BOOL ok = GetQueuedCompletionStatus(eventHandle, &bytesTransferred, &completionKey, &overlapped, INFINITE);
 		if (runs == false) break; // unblock thread for stopping
-		EventHandler *handler = reinterpret_cast<EventHandler *>(completionKey);
 		Event *event = reinterpret_cast<Event *>(overlapped);
 		if (ok == FALSE)
 		{
 			DWORD err = GetLastError();
 			if (err != WAIT_TIMEOUT) // actually no need because INFINITE was used
 			{
-				if (handler && event)
+				if (event && event->eventCallback)
 				{
 					event->error = err;
-					handler->handleEvent(0, event);
+					event->eventCallback(0, event);
 				}
 			}
 			continue;
 		}
-		if (handler && event) handler->handleEvent(bytesTransferred, event);
+		if (event && event->eventCallback) event->eventCallback(bytesTransferred, event);
 	}
 }
 

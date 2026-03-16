@@ -1,4 +1,5 @@
 #pragma once
+#include <functional>
 #include "../Buffer.h"
 
 #if DNET_WINDOWS
@@ -13,8 +14,13 @@
 
 namespace DNet
 {
-#if DNET_LINUX
-class EventHandler;
+
+struct Event;
+
+#if DNET_WINDOWS
+typedef std::function<void(DWORD bytesTransferred, Event *event)> EventCallback;
+#elif DNET_LINUX
+typedef std::function<void(int32_t bytesTransferred, Event *event)> EventCallback;
 #endif
 
 enum EventType
@@ -27,14 +33,13 @@ enum EventType
 
 struct Event DNET_EVENT_EX
 {
+	EventCallback eventCallback;
 	EventType type;
 	Buffer buffer;
 #if DNET_WINDOWS
 	DWORD error;
-	HANDLE handle;
 	SOCKADDR_STORAGE addr;
 #elif DNET_LINUX
-	EventHandler *eventHandler;
 	int error;
 	sockaddr_storage addr;
 	msghdr msg;
@@ -43,12 +48,12 @@ struct Event DNET_EVENT_EX
 	int addrLen;
 
 #if DNET_WINDOWS
-	Event(EventType t) : type(t), error(ERROR_SUCCESS), buffer(Buffer::STACK_SIZE), handle(NULL), addrLen(0)
+	Event(EventType t) : eventCallback(nullptr), type(t), error(ERROR_SUCCESS), buffer(Buffer::STACK_SIZE), addrLen(0)
 	{
 		memset(this, 0, sizeof(OVERLAPPED));
 	}
 #elif DNET_LINUX
-	Event(EventType t) : type(t), error(0), buffer(Buffer::STACK_SIZE), addrLen(0), eventHandler(nullptr)
+	Event(EventType t) : eventCallback(nullptr), type(t), error(0), buffer(Buffer::STACK_SIZE), addrLen(0)
 	{
 	}
 #endif

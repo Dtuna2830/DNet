@@ -1,5 +1,4 @@
 #include "DNet/Event/EventLoop.h"
-#include "DNet/Event/EventHandler.h"
 #include <stdexcept>
 
 namespace DNet
@@ -49,15 +48,14 @@ void EventLoop::run()
 		Event *event = reinterpret_cast<Event *>(io_uring_cqe_get_data(cqe));
 		if (event)
 		{
-			EventHandler *handler = event->eventHandler;
 			if (cqe->res < 0)
 			{
 				event->error = cqe->res;
-				if (handler) handler->handleEvent(0, event);
+				if (event->eventCallback) event->eventCallback(0, event);
 			}
 			else
 			{
-				if (handler) handler->handleEvent(cqe->res, event);
+				if (event->eventCallback) event->eventCallback(cqe->res, event);
 			}
 		}
 		io_uring_cqe_seen(eventHandle, cqe);

@@ -1,2 +1,0 @@
-add_executable(TcpServerExample TcpServer.cpp)
-target_link_libraries(TcpServerExample PRIVATE DNet)
