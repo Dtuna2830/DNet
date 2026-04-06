@@ -56,4 +56,4 @@ Error AsyncTcpSocket::setOption(const SocketOption<T> &option)
 	return option.set(socketHandle);
 }
 
-}
+} // namespace DNet

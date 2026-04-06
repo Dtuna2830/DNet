@@ -38,4 +38,4 @@ Error AsyncTcpSocket::asyncRecv(RecvCallback callback)
 	return asyncRecv(Buffer::STACK_SIZE, std::move(callback));
 }
 
-}
+} // namespace DNet

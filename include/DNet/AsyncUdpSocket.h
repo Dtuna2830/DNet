@@ -43,4 +43,4 @@ Error AsyncUdpSocket::setOption(const SocketOption<T> &option)
 	return option.set(socketHandle);
 }
 
-}
+} // namespace DNet

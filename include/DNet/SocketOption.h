@@ -116,4 +116,4 @@ struct ExclusiveAddress : public SocketOption<ExclusiveAddress>
 	}
 };
 
-}
+} // namespace DNet

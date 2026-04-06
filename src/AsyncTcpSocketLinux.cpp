@@ -173,4 +173,4 @@ Error AsyncTcpSocket::asyncSend(const char *data, size_t size, SendCallback call
 	return Error();
 }
 
-}
+} // namespace DNet

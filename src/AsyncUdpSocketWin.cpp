@@ -101,4 +101,4 @@ Error AsyncUdpSocket::asyncSend(const char *data, size_t size, const Endpoint &e
 	return Error();
 }
 
-}
+} // namespace DNet
