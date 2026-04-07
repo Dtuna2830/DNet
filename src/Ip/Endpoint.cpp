@@ -10,6 +10,8 @@ Endpoint::Endpoint()
 {
 	dAddr = Address::LoopbackV4();
 	portNum = 0;
+	flow = 0;
+	scope = 0;
 	setSockAddr();
 }
 
@@ -17,6 +19,8 @@ Endpoint::Endpoint(const Address &address, unsigned short port)
 {
 	dAddr = address;
 	portNum = port;
+	flow = 0;
+	scope = 0;
 	setSockAddr();
 }
 
@@ -27,12 +31,16 @@ Endpoint::Endpoint(const sockaddr *addr)
 		const sockaddr_in *addrIn = reinterpret_cast<const sockaddr_in *>(addr);
 		dAddr = Address(addrIn->sin_addr);
 		portNum = ntohs(addrIn->sin_port);
+		flow = 0;
+		scope = 0;
 	}
 	else if (addr->sa_family == AF_INET6)
 	{
 		const sockaddr_in6 *addrIn6 = reinterpret_cast<const sockaddr_in6 *>(addr);
 		dAddr = Address(addrIn6->sin6_addr);
 		portNum = ntohs(addrIn6->sin6_port);
+		flow = ntohl(addrIn6->sin6_flowinfo);
+		scope = addrIn6->sin6_scope_id;
 	}
 	setSockAddr();
 }
@@ -45,6 +53,24 @@ const Address &Endpoint::address() const
 unsigned short Endpoint::port() const
 {
 	return portNum;
+}
+
+uint32_t Endpoint::flowInfo() const
+{
+	return flow;
+}
+
+uint32_t Endpoint::scopeId() const
+{
+	return scope;
+}
+
+void Endpoint::setIPv6Options(uint32_t flowinfo, uint32_t scopeid)
+{
+	if (dAddr.type() != AddressType::IPv6) return;
+	flow = flowinfo;
+	scope = scopeid;
+	setSockAddr();
 }
 
 const sockaddr *Endpoint::get() const
@@ -96,6 +122,8 @@ void Endpoint::setSockAddr()
 		addr6.sin6_family = AF_INET6;
 		addr6.sin6_port = htons(portNum);
 		addr6.sin6_addr = dAddr.get().ipv6;
+		addr6.sin6_flowinfo = htonl(flow);
+		addr6.sin6_scope_id = scope;
 	}
 }
 

@@ -13,6 +13,10 @@ public:
 
 	const Address &address() const;
 	unsigned short port() const;
+	uint32_t flowInfo() const;
+	uint32_t scopeId() const;
+
+	void setIPv6Options(uint32_t flowinfo, uint32_t scopeid);
 
 	const sockaddr *get() const;
 	socklen_t length() const;
@@ -28,6 +32,8 @@ private:
 
 	Address dAddr;
 	unsigned short portNum;
+	uint32_t flow;
+	uint32_t scope;
 
 	sockaddr_in addr4;
 	sockaddr_in6 addr6;
