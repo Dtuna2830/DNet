@@ -57,6 +57,23 @@ struct Event DNET_EVENT_EX
 	{
 	}
 #endif
+	void reset(EventType t)
+	{
+#if DNET_WINDOWS
+		memset(this, 0, sizeof(OVERLAPPED));
+		error = ERROR_SUCCESS;
+		memset(&addr, 0, sizeof(SOCKADDR_STORAGE));
+#elif DNET_LINUX
+		error = 0;
+		memset(&addr, 0, sizeof(sockaddr_storage));
+		memset(&msg, 0, sizeof(msghdr));
+		memset(&iov, 0, sizeof(iovec));
+#endif
+		eventCallback = nullptr;
+		type = t;
+		buffer.resize(0);
+		addrLen = 0;
+	}
 };
 
 } // namespace DNet
