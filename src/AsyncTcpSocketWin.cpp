@@ -124,6 +124,7 @@ Error AsyncTcpSocket::asyncAccept(AsyncTcpSocket &acceptSocket, AcceptCallback c
 			}
 		}
 		callback(err, remoteEndpoint);
+		eventLoop.getEventPool().deallocateEvent(ev);
 	};
 
 	DWORD bytes;
