@@ -11,6 +11,7 @@ SpaceBeforeParens: Custom
 IndentAccessModifiers: false
 AccessModifierOffset: -4
 SortIncludes: false
+ReflowComments: IndentOnly
 SpaceBeforeParensOptions:
   AfterControlStatements: true
   AfterFunctionDefinitionName: false
