@@ -50,6 +50,7 @@ Error AsyncTcpSocket::shutdown(ShutdownType type)
 Error AsyncTcpSocket::asyncConnect(const Endpoint &endpoint, ConnectCallback callback)
 {
 	Event *event = eventLoop.getEventPool().allocateEvent(EventType::Connect);
+	memcpy(&event->addr, endpoint.get(), endpoint.length());
 	event->eventCallback = [this, callback](int32_t, Event *ev)
 	{
 		Error err(ev->error);
@@ -64,7 +65,7 @@ Error AsyncTcpSocket::asyncConnect(const Endpoint &endpoint, ConnectCallback cal
 		return Error(EBUSY);
 	}
 
-	io_uring_prep_connect(sqe, socketHandle, endpoint.get(), endpoint.length());
+	io_uring_prep_connect(sqe, socketHandle, reinterpret_cast<sockaddr *>(&event->addr), endpoint.length());
 	io_uring_sqe_set_data(sqe, event);
 
 	int result = io_uring_submit(eventLoop.getEventHandle());

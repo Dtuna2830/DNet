@@ -75,6 +75,11 @@ Error AsyncUdpSocket::asyncSend(const char *data, size_t size, const Endpoint &e
 {
 	Event *event = eventLoop.getEventPool().allocateEvent(EventType::Write);
 	event->buffer.assign(data, size);
+	// Note: WSASendTo seems to copy sockaddr internally, but this is undocumented and potentially unsafe.
+	/*
+	memcpy(&event->addr, endpoint.get(), endpoint.length());
+	event->addrLen = endpoint.length();
+	*/
 	event->eventCallback = [this, callback](DWORD bytesSent, Event *ev)
 	{
 		Error err(ev->error);
@@ -87,6 +92,7 @@ Error AsyncUdpSocket::asyncSend(const char *data, size_t size, const Endpoint &e
 	wsabuf.buf = event->buffer.data();
 	DWORD flags = 0;
 	DWORD bytesSent = 0;
+	// int result = WSASendTo(socketHandle, &wsabuf, 1, &bytesSent, flags, reinterpret_cast<sockaddr *>(&event->addr), event->addrLen, event, nullptr);
 	int result =
 		WSASendTo(socketHandle, &wsabuf, 1, &bytesSent, flags, endpoint.get(), endpoint.length(), event, nullptr);
 	if (result == SOCKET_ERROR)

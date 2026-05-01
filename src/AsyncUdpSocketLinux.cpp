@@ -72,9 +72,11 @@ Error AsyncUdpSocket::asyncSend(const char *data, size_t size, const Endpoint &e
 {
 	Event *event = eventLoop.getEventPool().allocateEvent(EventType::Write);
 	event->buffer.assign(data, size);
+	memcpy(&event->addr, endpoint.get(), endpoint.length());
+	// event->addrLen = endpoint.length(); used: event->msg.msg_namelen
 	event->iov.iov_base = event->buffer.data();
 	event->iov.iov_len = event->buffer.size();
-	event->msg.msg_name = const_cast<sockaddr *>(endpoint.get());
+	event->msg.msg_name = &event->addr;
 	event->msg.msg_namelen = endpoint.length();
 	event->msg.msg_iov = &event->iov;
 	event->msg.msg_iovlen = 1;

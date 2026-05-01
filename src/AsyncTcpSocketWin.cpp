@@ -68,6 +68,11 @@ Error AsyncTcpSocket::asyncConnect(const Endpoint &endpoint, ConnectCallback cal
 	if (bindResult == SOCKET_ERROR) return Error(WSAGetLastError());
 
 	Event *event = eventLoop.getEventPool().allocateEvent(EventType::Connect);
+	// Note: ConnectEx seems to copy sockaddr internally, but this is undocumented and potentially unsafe.
+	/*
+	memcpy(&event->addr, endpoint.get(), endpoint.length());
+	event->addrLen = endpoint.length();
+	*/
 	event->eventCallback = [this, callback](DWORD, Event *ev)
 	{
 		Error err(ev->error);
@@ -81,6 +86,7 @@ Error AsyncTcpSocket::asyncConnect(const Endpoint &endpoint, ConnectCallback cal
 	};
 
 	DWORD bytes;
+	// BOOL results = NetInit::ConnectEx(socketHandle, reinterpret_cast<const sockaddr *>(&event->addr), event->addrLen,nullptr, NULL, &bytes, event);
 	BOOL result = NetInit::ConnectEx(socketHandle, endpoint.get(), endpoint.length(), nullptr, NULL, &bytes, event);
 	if (result == FALSE)
 	{
