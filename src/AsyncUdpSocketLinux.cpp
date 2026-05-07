@@ -31,7 +31,6 @@ Error AsyncUdpSocket::asyncRecv(size_t size, RecvCallback callback)
 {
 	Event *event = eventLoop.getEventPool().allocateEvent(EventType::Read);
 	event->buffer.reserve(size);
-	event->addrLen = sizeof(sockaddr_storage);
 	event->iov.iov_base = event->buffer.data();
 	event->iov.iov_len = event->buffer.capacity();
 	event->msg.msg_name = &event->addr;
