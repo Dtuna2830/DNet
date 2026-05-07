@@ -151,7 +151,7 @@ Error AsyncTcpSocket::asyncAccept(AsyncTcpSocket &acceptSocket, AcceptCallback c
 Error AsyncTcpSocket::asyncRecv(size_t size, RecvCallback callback)
 {
 	Event *event = eventLoop.getEventPool().allocateEvent(EventType::Read);
-	event->buffer.reserve(Buffer::STACK_SIZE);
+	event->buffer.reserve(size);
 	event->eventCallback = [this, callback](DWORD bytesReceived, Event *ev)
 	{
 		Error err(ev->error);
