@@ -174,4 +174,62 @@ Error AsyncTcpSocket::asyncSend(const char *data, size_t size, SendCallback call
 	return Error();
 }
 
+Error AsyncTcpSocket::asyncRecvZc(char *data, size_t size, RecvCallback callback)
+{
+	Event *event = eventLoop.getEventPool().allocateEvent(EventType::Read);
+	event->eventCallback = [this, callback, data](int32_t bytesReceived, Event *ev)
+	{
+		Error err(ev->error);
+		callback(err, data, bytesReceived);
+		eventLoop.getEventPool().deallocateEvent(ev);
+	};
+
+	io_uring_sqe *sqe = io_uring_get_sqe(eventLoop.getEventHandle());
+	if (!sqe)
+	{
+		eventLoop.getEventPool().deallocateEvent(event);
+		return Error(EBUSY);
+	}
+
+	io_uring_prep_recv(sqe, socketHandle, data, size, 0);
+	io_uring_sqe_set_data(sqe, event);
+
+	int result = io_uring_submit(eventLoop.getEventHandle());
+	if (result < 0)
+	{
+		eventLoop.getEventPool().deallocateEvent(event);
+		return Error(result);
+	}
+	return Error();
+}
+
+Error AsyncTcpSocket::asyncSendZc(const char *data, size_t size, SendCallback callback)
+{
+	Event *event = eventLoop.getEventPool().allocateEvent(EventType::Write);
+	event->eventCallback = [this, callback](int32_t bytesSent, Event *ev)
+	{
+		Error err(ev->error);
+		callback(err, bytesSent);
+		eventLoop.getEventPool().deallocateEvent(ev);
+	};
+
+	io_uring_sqe *sqe = io_uring_get_sqe(eventLoop.getEventHandle());
+	if (!sqe)
+	{
+		eventLoop.getEventPool().deallocateEvent(event);
+		return Error(EBUSY);
+	}
+
+	io_uring_prep_send(sqe, socketHandle, data, size, 0);
+	io_uring_sqe_set_data(sqe, event);
+
+	int result = io_uring_submit(eventLoop.getEventHandle());
+	if (result < 0)
+	{
+		eventLoop.getEventPool().deallocateEvent(event);
+		return Error(result);
+	}
+	return Error();
+}
+
 } // namespace DNet

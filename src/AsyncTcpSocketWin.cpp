@@ -206,4 +206,60 @@ Error AsyncTcpSocket::asyncSend(const char *data, size_t size, SendCallback call
 	return Error();
 }
 
+Error AsyncTcpSocket::asyncRecvZc(char *data, size_t size, RecvCallback callback)
+{
+	Event *event = eventLoop.getEventPool().allocateEvent(EventType::Read);
+	event->eventCallback = [this, callback, data](DWORD bytesReceived, Event *ev)
+	{
+		Error err(ev->error);
+		callback(err, data, bytesReceived);
+		eventLoop.getEventPool().deallocateEvent(ev);
+	};
+
+	WSABUF wsabuf;
+	wsabuf.len = static_cast<ULONG>(size);
+	wsabuf.buf = data;
+	DWORD flags = 0;
+	DWORD bytesReceived = 0;
+	int result = WSARecv(socketHandle, &wsabuf, 1, &bytesReceived, &flags, event, nullptr);
+	if (result == SOCKET_ERROR)
+	{
+		int err = WSAGetLastError();
+		if (err != WSA_IO_PENDING)
+		{
+			eventLoop.getEventPool().deallocateEvent(event);
+			return Error(err);
+		}
+	}
+	return Error();
+}
+
+Error AsyncTcpSocket::asyncSendZc(const char *data, size_t size, SendCallback callback)
+{
+	Event *event = eventLoop.getEventPool().allocateEvent(EventType::Write);
+	event->eventCallback = [this, callback](DWORD bytesSent, Event *ev)
+	{
+		Error err(ev->error);
+		callback(err, bytesSent);
+		eventLoop.getEventPool().deallocateEvent(ev);
+	};
+
+	WSABUF wsabuf;
+	wsabuf.len = static_cast<ULONG>(size);
+	wsabuf.buf = const_cast<char *>(data);
+	DWORD flags = 0;
+	DWORD bytesSent = 0;
+	int result = WSASend(socketHandle, &wsabuf, 1, &bytesSent, flags, event, nullptr);
+	if (result == SOCKET_ERROR)
+	{
+		int err = WSAGetLastError();
+		if (err != WSA_IO_PENDING)
+		{
+			eventLoop.getEventPool().deallocateEvent(event);
+			return Error(err);
+		}
+	}
+	return Error();
+}
+
 } // namespace DNet

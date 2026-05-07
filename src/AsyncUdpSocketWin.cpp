@@ -107,4 +107,68 @@ Error AsyncUdpSocket::asyncSend(const char *data, size_t size, const Endpoint &e
 	return Error();
 }
 
+Error AsyncUdpSocket::asyncRecvZc(char *data, size_t size, RecvCallback callback)
+{
+	Event *event = eventLoop.getEventPool().allocateEvent(EventType::Read);
+	event->addrLen = sizeof(SOCKADDR_STORAGE);
+	event->eventCallback = [this, callback, data](DWORD bytesReceived, Event *ev)
+	{
+		Error err(ev->error);
+		Endpoint remoteEndpoint;
+		if (err.ok())
+		{
+			remoteEndpoint = Endpoint(reinterpret_cast<const sockaddr *>(&ev->addr));
+		}
+		callback(err, data, bytesReceived, remoteEndpoint);
+		eventLoop.getEventPool().deallocateEvent(ev);
+	};
+
+	WSABUF wsabuf;
+	wsabuf.len = static_cast<ULONG>(size);
+	wsabuf.buf = data;
+	DWORD flags = 0;
+	DWORD bytesReceived = 0;
+	int result = WSARecvFrom(socketHandle, &wsabuf, 1, &bytesReceived, &flags,
+							 reinterpret_cast<sockaddr *>(&event->addr), &event->addrLen, event, nullptr);
+	if (result == SOCKET_ERROR)
+	{
+		int err = WSAGetLastError();
+		if (err != WSA_IO_PENDING)
+		{
+			eventLoop.getEventPool().deallocateEvent(event);
+			return Error(err);
+		}
+	}
+	return Error();
+}
+
+Error AsyncUdpSocket::asyncSendZc(const char *data, size_t size, const Endpoint &endpoint, SendCallback callback)
+{
+	Event *event = eventLoop.getEventPool().allocateEvent(EventType::Write);
+	event->eventCallback = [this, callback](DWORD bytesSent, Event *ev)
+	{
+		Error err(ev->error);
+		callback(err, bytesSent);
+		eventLoop.getEventPool().deallocateEvent(ev);
+	};
+
+	WSABUF wsabuf;
+	wsabuf.len = static_cast<ULONG>(size);
+	wsabuf.buf = const_cast<char *>(data);
+	DWORD flags = 0;
+	DWORD bytesSent = 0;
+	int result =
+		WSASendTo(socketHandle, &wsabuf, 1, &bytesSent, flags, endpoint.get(), endpoint.length(), event, nullptr);
+	if (result == SOCKET_ERROR)
+	{
+		int err = WSAGetLastError();
+		if (err != WSA_IO_PENDING)
+		{
+			eventLoop.getEventPool().deallocateEvent(event);
+			return Error(err);
+		}
+	}
+	return Error();
+}
+
 } // namespace DNet

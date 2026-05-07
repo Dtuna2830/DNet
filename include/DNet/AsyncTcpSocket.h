@@ -44,6 +44,8 @@ public:
 	Error asyncRecv(RecvCallback callback);
 	Error asyncRecv(size_t size, RecvCallback callback);
 	Error asyncSend(const char *data, size_t size, SendCallback callback);
+	Error asyncRecvZc(char *data, size_t size, RecvCallback callback);
+	Error asyncSendZc(const char *data, size_t size, SendCallback callback);
 
 private:
 	SocketHandle socketHandle;
