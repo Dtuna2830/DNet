@@ -3,6 +3,7 @@ project(DNet)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 option(BUILD_EXAMPLES "Build examples" ON)
+option(BUILD_DOCS "Build documentation" OFF)
 
 if(WIN32)
     set(DNET_PLATFORM_WINDOWS ON)
@@ -65,4 +66,12 @@ endif()
 
 if(BUILD_EXAMPLES)
     add_subdirectory(examples)
+endif()
+
+if(BUILD_DOCS)
+    find_package(Doxygen REQUIRED)
+    doxygen_add_docs(docs
+        ALL
+        CONFIG_FILE ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile
+    )
 endif()

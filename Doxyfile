@@ -1,0 +1,20 @@
+# Doxyfile 1.17.0
+PROJECT_NAME           = "DNet"
+PROJECT_BRIEF          = "Completion-based C++ networking library"
+PROJECT_LOGO           = assets/logo.png
+OUTPUT_DIRECTORY       = docs
+CREATE_SUBDIRS         = NO
+FULL_PATH_NAMES        = NO
+RECURSIVE              = YES
+INPUT                  = include src
+FILE_PATTERNS          = *.cpp \
+                         *.h
+GENERATE_HTML          = YES
+GENERATE_LATEX         = NO
+GENERATE_TREEVIEW      = YES
+STRIP_FROM_INC_PATH    = include
+SOURCE_BROWSER         = YES
+INLINE_SOURCES         = NO
+STRIP_CODE_COMMENTS    = YES
+EXTRACT_ALL            = YES
+HTML_EXTRA_STYLESHEET  = assets/styles.css

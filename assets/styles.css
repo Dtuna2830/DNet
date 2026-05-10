@@ -1,0 +1,8 @@
+#projectlogo {
+    vertical-align: middle;
+}
+
+#projectlogo img {
+    max-height: 42px;
+    width: auto;
+}
